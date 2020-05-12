@@ -1,0 +1,5 @@
+- import_playbook: playbooks/login.yml
+# - import_playbook: playbooks/devices.yml
+- import_playbook: playbooks/tunnel_stats.yml
+  vars:
+    tunnel_devices: ['4.4.4.60','4.4.4.90']

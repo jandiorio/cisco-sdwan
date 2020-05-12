@@ -1,0 +1,53 @@
+- name: Second Play
+  hosts: sandboxsdwan.cisco.com
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: GET TUNNEL STATS
+      uri:
+        url: "https://{{ inventory_hostname }}:{{ ansible_port }}/dataservice/device/tunnel/statistics?deviceId={{ deviceId }}"
+        method: GET
+        headers:
+          Cookie: "{{ token }}"
+        return_content: yes
+        validate_certs: no
+      register: tunnel_stats
+      loop: "{{ tunnel_devices }}"
+      loop_control:
+        loop_var: "deviceId"
+      tags:
+        - tunnel
+
+    - name: DEBUG TUNNEL STATS
+      debug:
+        var: tunnel_stats.results | to_nice_yaml
+    #   when: tunnel_stats.json.data is defined
+      tags:
+        - tunnel
+
+    - name: Print stuff
+      debug:
+        var: item.json.data
+      loop: "{{ tunnel_stats.results }}"
+      loop_control:
+        label: "{{ item.deviceId }}"
+
+    - name: Print Jinja
+      debug:
+        # msg: "{{ tunnel_stats.results[0].json.data[0]['dest-ip'] }}"
+        msg: |
+            {% for device in tunnel_stats.results %}
+            =================================================
+            Device ID: {{ device.deviceId }}
+            Tunnel Data:
+            {% for tunnel in device.json.data %}
+            {{ tunnel['dest-ip'] }}:
+                Local Color: {{ tunnel['local-color'] }}
+                Remote Color: {{ tunnel['remote-color'] }}
+            {% endfor %}
+            {% endfor %}
+
+    #   loop: "{{ tunnel_stats.results }}"
+    #   loop_control:
+    #     label: "{{ item.deviceId }}"

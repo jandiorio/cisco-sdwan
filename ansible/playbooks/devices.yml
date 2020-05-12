@@ -1,0 +1,19 @@
+- name: Get Devices
+  hosts: sandboxsdwan.cisco.com
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: GET DEVICES
+      uri:
+        url: "https://{{ inventory_hostname }}:{{ ansible_port }}/dataservice/device"
+        method: GET
+        headers:
+          Cookie: "{{ token }}"
+        return_content: yes
+        validate_certs: no
+      register: devices
+
+    - name: PRINT DEVICES
+      debug:
+        var: devices.json.data

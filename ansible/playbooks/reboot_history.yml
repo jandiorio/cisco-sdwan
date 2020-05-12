@@ -1,0 +1,20 @@
+- name: Second Play
+  hosts: sandboxsdwan.cisco.com
+  connection: local
+  gather_facts: false
+
+  tasks:
+
+    - debug: var=token
+
+    - name: GET REBOOT HISTORY DETAILS
+      uri:
+        url: "https://{{ inventory_hostname }}:{{ ansible_port }}/dataservice/device/reboothistory/details"
+        method: GET
+        headers:
+            Cookie: "{{ token }}"
+        return_content: yes
+        validate_certs: no
+      register: reboot_history_results
+
+

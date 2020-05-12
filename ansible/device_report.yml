@@ -1,0 +1,28 @@
+---
+- name: Devices Report
+  hosts: all
+  gather_facts: false
+  connection: local
+
+  roles:
+    - ansible-viptela
+
+  tasks:
+    - name: ENSURE REPORTS DIRECTORY IS CREATED
+      file:
+        path: ./reports
+        state: directory
+
+    - name: GET vManage Inventory
+      vmanage_device_facts:
+        user: "{{ ansible_user }}"
+        host: "sandboxsdwan.cisco.com:8443"
+        password: "{{ ansible_password }}"
+
+      register: devices
+
+    - debug:
+        msg: |
+          {% for device in devices['controllers'] %}
+          {{ device.deviceType }} | {{ device['local-system-ip'] }} | {{ device['site-id'] }}
+          {% endfor %}

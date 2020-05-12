@@ -1,0 +1,25 @@
+---
+- name: Authenticate to vManage
+  hosts: sandboxsdwan.cisco.com
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Authenticate API Call
+      uri:
+        url: "https://{{ inventory_hostname }}:{{ ansible_port }}/j_security_check"
+        body_format: form-urlencoded
+        body:
+          j_username: "{{ ansible_user }}"
+          j_password: "{{ ansible_ssh_pass }}"
+        method: POST
+        validate_certs: false
+      register: login_results
+      tags:
+        - tunnel
+
+    - name: Set Fact for Token
+      set_fact:
+        token: "{{ login_results.set_cookie }}"
+      tags:
+        - tunnel

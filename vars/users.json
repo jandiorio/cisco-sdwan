@@ -1,0 +1,13 @@
+{
+    "users":[
+        {
+        "group": [
+            "netadmin"
+        ],
+        "description": "jeff andiorio",
+        "userName": "jandiorio",
+        "password": "cisco"
+    }
+    ]
+
+}
